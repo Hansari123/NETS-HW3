@@ -56,14 +56,13 @@ public class URLGetter {
         return contents;
     }
 
-
-    public URL getRedirectURL() {
+    public String getRedirectURL() {
         try {
             int code = httpConnection.getResponseCode();
             if ((code / 100) == 3) {
-                return ;
+                return httpConnection.getHeaderField("location");
             } else {
-                return url;
+                return url.toString();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

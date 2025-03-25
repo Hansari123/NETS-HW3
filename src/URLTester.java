@@ -4,7 +4,7 @@ import java.util.ArrayList;
  */
 public class URLTester {
     public static void main(String[] args) {
-        URLGetter url = new URLGetter("https://www.google.com");
+        URLGetter url = new URLGetter("http://nytimes.com");
         url.printStatusCode();
         ArrayList<String> page = url.getContents();
         for (String line : page) {

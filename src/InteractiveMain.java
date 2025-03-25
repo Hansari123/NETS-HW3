@@ -1,3 +1,5 @@
+import org.jsoup.nodes.Document;
+
 import java.util.Map;
 import java.util.Scanner;
 
@@ -5,6 +7,14 @@ public class InteractiveMain {
     public static void main(String[] args) {
         // Create a Scanner to enable interactivity
         Scanner scanner = new Scanner(System.in);
+        Document homepage = WebParser.fetchPage("https://en.wikipedia.org/wiki/Summer_Olympic_Games");
+        //System.out.println(homepage);
+        if (homepage != null) {
+            // CASING!!!!
+            WebParser.questionOne("C", homepage);
+        }
+
+        /*
         System.out.println("Welcome to the Wikipedia Web Scraper!");
         System.out.println("We have scraped Summer Olympics data. You can:");
         System.out.println("1. List all past and present Olympic sports that start with some letter");
@@ -46,5 +56,7 @@ public class InteractiveMain {
             }
         }
         scanner.close();
+
+         */
     }
 }
