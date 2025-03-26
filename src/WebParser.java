@@ -58,26 +58,15 @@ public class WebParser {
         }
     }
 
-    /*
+    public static void questionThree(int atLeast, int year, Document doc) {
 
-    public static void questionTwo(Document doc) {
-        //go to list of participating nations link
-        // go down to obsolete nations table
-        // all light gray?
-        Element table = doc.select("div.sortable.wikitable.jquery-tablesorter").first();
-        System.out.println(table);
-        if (table != null) {
-            String title = table.attr("title");
-            System.out.println(title);
-// there's a div: <div class="mw-content-ltr mw-parser-output"
-            // within it, theres tables (the table we are looking for)
-            // for each element within the table:
-            // if title.get(0).equals(letter), system.out.println(title);
-        }
-        //return null;
+
+
     }
 
 
 
-     */
+
+
+
 }
