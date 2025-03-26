@@ -80,7 +80,8 @@ public class InteractiveMain {
                     }
                 }
                 System.out.println("List all countries that have won at least " + numMedals + " medals in " + year);
-                //WebParser.questionThree();
+                //int numberInTable = (year / 4) -
+                WebParser.questionThree(numMedals, year, homepage);
             } else if (input.equals("4")) {
                 System.out.println(" ");
             } else if (input.equals("5")) {
