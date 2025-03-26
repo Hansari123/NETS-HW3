@@ -88,7 +88,31 @@ public class InteractiveMain {
                 System.out.println("List of all countries that have won at least " + numMedals + " silver medals in " + year);
                 WebParser.questionThree(numMedals, year, homepage);
             } else if (input.equals("4")) {
-                System.out.println(" ");
+                System.out.println("You picked: List all countries that had podium sweeps in some year.");
+                boolean goodYear = false;
+                int year = 0;
+                while (!goodYear) {
+                    System.out.println("Which year would you like to inspect?");
+                    input = scanner.nextLine();
+                    int numDigits  = 0;
+                    if (input.length() == 4) {
+                        for (int i = 0; i < 4; i++) {
+                            if (Character.isDigit(input.charAt(i))) {
+                                numDigits++;
+                            }
+                        }
+                        if (numDigits == 4) {
+                            year = Integer.parseInt(input);
+                        }
+
+                        if (year >= 1896 && year % 4 == 0 && year <= 2024) {
+                            goodYear = true;
+                        }
+                    }
+                }
+                System.out.println();
+                System.out.println("List of all countries that had podium sweeps in " + year);
+                WebParser.questionFour(year, homepage);
             } else if (input.equals("5")) {
                 System.out.println(" ");
             } else if (input.equals("6")) {

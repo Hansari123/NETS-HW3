@@ -132,4 +132,73 @@ public class WebParser {
             System.out.println(country);
         }
     }
+
+
+    public static void questionFour (int year, Document doc) {
+        String correctPage = "";
+        Elements table = doc.select("table");
+        // iterating over all tables
+        for (Element t : table) {
+            //if table is null go next
+            if (t != null) {
+                // if header of table is null go next (we want the name of the first part of the header)
+                if (t.selectFirst("th") != null) {
+                    // If first part of the header is Olympiad, then we found the correct table
+                    if (t.selectFirst("th").text().equals("Olympiad")) {
+                        // We get all the rows within that table
+                        Elements rows = t.select("tr");
+                        // We now iterate over the rows of the table
+                        for (Element row : rows) {
+                            // Check if first "td" tag within the row is not null
+                            if (row.selectFirst("td") != null) {
+                                // Check if we are inspecting the correct year/row
+                                if (row.selectFirst("td").text().substring(0, 4).equals("" + year)) {
+                                    // We get the link to the year's page
+                                    if (row.select("td").size() >= 2) {
+                                        if (row.select("td").get(1).selectFirst("a") != null) {
+                                            Element link = row.select("td").get(1).selectFirst("a");
+                                            correctPage = "https://en.wikipedia.org" + link.attr("href");   //ASK!!!!!!!!!!!!!!!
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // CHECK 1904!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ASK ERROR HANDLING!!!!!!!!!!!!!!!!!!
+
+        Set<String> countries = new TreeSet<>();
+        Document newDoc = fetchPage(correctPage);
+        if (newDoc != null) {
+            Elements table2 = newDoc.select("table");
+            // iterating over all tables
+            for (Element t : table2) {
+                //if table is null go next
+                if (t != null) {
+                    if (t.selectFirst("th") != null) {
+                        if (t.selectFirst("th").text().equals("Date")) {
+                            Elements rows = t.select("tr");
+                            for (Element row : rows) {
+                                if (row.select("td").size() >= 3) {
+                                    if (row.select("td").get(3).selectFirst("a") != null) {
+                                        countries.add(row.select("td").get(3).selectFirst("a").text());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (countries.isEmpty()) {
+            System.out.println("None");
+        } else {
+            for (String country : countries) {
+                System.out.println(country);
+            }
+        }
+    }
 }
