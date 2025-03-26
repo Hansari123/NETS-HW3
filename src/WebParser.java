@@ -84,7 +84,6 @@ public class WebParser {
                                         if (row.select("td").get(1).selectFirst("a") != null) {
                                             Element link = row.select("td").get(1).selectFirst("a");
                                             correctPage = "https://en.wikipedia.org" + link.attr("href");   //ASK!!!!!!!!!!!!!!!
-                                            System.out.println(correctPage);
                                         }
                                     }
                                 }

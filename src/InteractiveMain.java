@@ -30,7 +30,7 @@ public class InteractiveMain {
         System.out.println();
         System.out.println("Choose a question by typing 1-8 in the console!");
         while (true) {
-            System.out.print("Question number (or 'exit'): ");
+            System.out.println("Question number (or 'exit'): ");
             // Take in user input on the next line
             String input = scanner.nextLine();
             // Now you can match on or use the user input with the 'input' variable
@@ -51,11 +51,16 @@ public class InteractiveMain {
                 System.out.println(" ");
             } else if (input.equals("3")) {
                 System.out.println("You picked: List all countries that have won at least some number of silver medals in some year.");
-                System.out.println("What number of silver medals would you like to inspect?");
-                input = scanner.nextLine();
-                while (input.length() != 1 || !Character.isDigit(input.charAt(0))) {
+                boolean correctNumMedals = false;
+                while (!correctNumMedals) {
                     System.out.println("What number of silver medals would you like to inspect?");
                     input = scanner.nextLine();
+                    for (int i = 0; i < input.length(); i++) {
+                        if (!Character.isDigit(input.charAt(i))) {
+                            break;
+                        }
+                    }
+                    correctNumMedals = true;
                 }
                 int numMedals = Integer.parseInt(input);
                 boolean goodYear = false;
@@ -79,8 +84,8 @@ public class InteractiveMain {
                         }
                     }
                 }
-                System.out.println("List all countries that have won at least " + numMedals + " medals in " + year);
-                //int numberInTable = (year / 4) -
+                System.out.println();
+                System.out.println("List of all countries that have won at least " + numMedals + " silver medals in " + year);
                 WebParser.questionThree(numMedals, year, homepage);
             } else if (input.equals("4")) {
                 System.out.println(" ");
