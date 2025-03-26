@@ -114,7 +114,15 @@ public class InteractiveMain {
                 System.out.println("List of all countries that had podium sweeps in " + year);
                 WebParser.questionFour(year, homepage);
             } else if (input.equals("5")) {
-                System.out.println(" ");
+                // ASSUMPTION: NO BAD INPUTS / CASING!
+                System.out.println("You picked: Find how many total medals some country has won in a sport.");
+                System.out.println("Pick a country.");
+                String country = scanner.nextLine();
+                System.out.println("Pick a sport");
+                String sport = scanner.nextLine();
+                System.out.println();
+                System.out.println("Find how many total medals " + country + " won in " + sport);
+                WebParser.questionFive(country, sport, homepage);
             } else if (input.equals("6")) {
                 System.out.println(" ");
             } else if (input.equals("7")) {

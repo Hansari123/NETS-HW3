@@ -168,7 +168,7 @@ public class WebParser {
             }
         }
 
-        // CHECK 1904!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ASK ERROR HANDLING!!!!!!!!!!!!!!!!!!
+        // CHECK 1904!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ASK ERROR HANDLING!!!!!!!!!!!!!!!!!! ASK IF THESE ARE ALL PODIUM SWEEPS!
 
         Set<String> countries = new TreeSet<>();
         Document newDoc = fetchPage(correctPage);
@@ -201,4 +201,82 @@ public class WebParser {
             }
         }
     }
+
+    // HOW TO HANDLE THOSE WITH 0 !!!!!!!!!!!!!!!!!
+    public static void questionFive(String country, String sport, Document doc) {
+        String total = "None";
+        // ASK THIS!!!!!!!!!!!!
+        Elements links = doc.select(".hatnote.navigation-not-searchable");
+        String correctPage = "https://en.wikipedia.org" + links.get(2).select("a").attr("href");
+        Document newDoc = fetchPage(correctPage);
+        if (newDoc != null) {
+            Elements table = newDoc.select("table");
+            // iterating over all tables
+            for (Element t : table) {
+                //if table is null go next
+                if (t != null) {
+                    // if header of table is null go next (we want the name of the first part of the header)
+                    if (t.selectFirst("th") != null) {
+                        // If first part of the header is Sport, then we found the correct table
+                        if (t.selectFirst("th").text().equals("Team")) {
+                            // We get all the rows within that table
+                            Elements rows = t.select("tr");
+                            // We now iterate over the rows of the table
+                            for (Element row : rows) {
+                                // Check if first "td" tag within the row is not null
+                                if (row.selectFirst("td") != null) {
+                                    // Check if first "a" instance is not null
+                                    if (row.selectFirst("td").selectFirst("a") != null) {
+                                        if (row.selectFirst("td").selectFirst("a").text().equals(country)) {
+                                            Element link = row.selectFirst("td").selectFirst("a");
+                                            correctPage = "https://en.wikipedia.org" + link.attr("href");
+                                            newDoc = fetchPage(correctPage);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if (newDoc != null) {
+            Elements table = newDoc.select("table");
+            // iterating over all tables
+            for (Element t : table) {
+                //if table is null go next
+                if (t != null) {
+                    // if header of table is null go next (we want the name of the first part of the header)
+                    if (t.selectFirst("th") != null) {
+                        // If first part of the header is Sport, then we found the correct table
+                        if (t.selectFirst("th").text().equals("Sport")) {
+                            // We get all the rows within that table
+                            Elements rows = t.select("tr");
+                            // We now iterate over the rows of the table
+                            for (Element row : rows) {
+                                // Check if first "td" tag within the row is not null
+                                if (row.selectFirst("a") != null) {
+                                    if (row.selectFirst("a").text().equals(sport)) {
+                                        if (row.select("td").size() >= 4) {
+                                            total = row.select("td").get(3).text();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(total);
+
+
+    }
+
+
+
+
+
 }
