@@ -48,7 +48,7 @@ public class InteractiveMain {
                 System.out.println("Getting all Olympic sports that start with the letter " + input.toUpperCase());
                 WebParser.questionOne(input.toUpperCase(), homepage);
             } else if (input.equals("2")) {
-                System.out.println(" ");
+                WebParser.questionTwo(homepage);
             } else if (input.equals("3")) {
                 System.out.println("You picked: List all countries that have won at least some number of silver medals in some year.");
                 boolean correctNumMedals = false;
@@ -124,7 +124,13 @@ public class InteractiveMain {
                 System.out.println("Find how many total medals " + country + " won in " + sport);
                 WebParser.questionFive(country, sport, homepage);
             } else if (input.equals("6")) {
-                System.out.println(" ");
+                System.out.println("You picked: Find how many governing bodies of the past or present sports from the Summer Olympics are\\n\" +\n" +
+                        "                \"headquartered in some country.");
+                System.out.println("Pick a country.");
+                String country = scanner.nextLine();
+                System.out.println("Find how many governing bodies of the past or present sports from the Summer Olympics are\\n\" +\n" +
+                                "                \"headquartered in " + country);
+                WebParser.questionSix("Switzerland", homepage);
             } else if (input.equals("7")) {
                 System.out.println(" ");
             } else if (input.equals("8")) {
