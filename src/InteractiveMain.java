@@ -48,7 +48,7 @@ public class InteractiveMain {
                 System.out.println("Getting all Olympic sports that start with the letter " + input.toUpperCase());
                 WebParser.questionOne(input.toUpperCase(), homepage);
             } else if (input.equals("2")) {
-                System.out.println("You picked: List all countries (full name, not country code) that have participated in the Olympics, but are now considered “obsolete");
+                System.out.println("You picked: List all countries (full name, not country code) that have participated in the Olympics, but are now considered “obsolete” ");
                 System.out.println("Obsolete countries:");
                 WebParser.questionTwo(homepage);
             } else if (input.equals("3")) {
