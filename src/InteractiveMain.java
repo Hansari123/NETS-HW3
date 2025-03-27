@@ -18,7 +18,7 @@ public class InteractiveMain {
         System.out.println("We have scraped Summer Olympics data. You can:");
         System.out.println("1. List all past and present Olympic sports that start with some letter");
         System.out.println("2. List all countries (full name, not country code) that have participated in the Olympics, but are\n" +
-                "now considered “obsolete”?");
+                "now considered “obsolete”.");
         System.out.println("3. List all countries that have won at least some number of silver medals in some year.");
         System.out.println("4. List all countries that had podium sweeps in some year.");
         System.out.println("5. Find how many total medals some country has won in a sport.");
@@ -48,6 +48,8 @@ public class InteractiveMain {
                 System.out.println("Getting all Olympic sports that start with the letter " + input.toUpperCase());
                 WebParser.questionOne(input.toUpperCase(), homepage);
             } else if (input.equals("2")) {
+                System.out.println("You picked: List all countries (full name, not country code) that have participated in the Olympics, but are now considered “obsolete");
+                System.out.println("Obsolete countries:");
                 WebParser.questionTwo(homepage);
             } else if (input.equals("3")) {
                 System.out.println("You picked: List all countries that have won at least some number of silver medals in some year.");
