@@ -156,6 +156,7 @@ public class WebParser {
         System.out.println(total);
     }
 
+    // SHOULD I GET UNIQUE?
     // A LOT OF THESE DONT HAVE GOVERNING BODIES???? // CAN I DO CONTAINS??????? // first table???? HOW TO GET THE ONE WITH THE GOVERNING BODY? // PERFORMANCE????
     public static void questionSix(String country, Document doc) {
         Set<String> governingBodies = new TreeSet<>();
