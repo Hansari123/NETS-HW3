@@ -130,7 +130,7 @@ public class InteractiveMain {
                 String country = scanner.nextLine();
                 System.out.println("Find how many governing bodies of the past or present sports from the Summer Olympics are\\n\" +\n" +
                                 "                \"headquartered in " + country);
-                WebParser.questionSix("Switzerland", homepage);
+                WebParser.questionSix(country, homepage);
             } else if (input.equals("7")) {
                 System.out.println(" ");
             } else if (input.equals("8")) {
