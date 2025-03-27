@@ -124,6 +124,7 @@ public class InteractiveMain {
                 System.out.println("Find how many total medals " + country + " won in " + sport);
                 WebParser.questionFive(country, sport, homepage);
             } else if (input.equals("6")) {
+                // UNITED STATES NOT US
                 System.out.println("You picked: Find how many governing bodies of past or present sports from the Summer Olympics are headquartered in some country.");
                 System.out.println("Pick a country.");
                 String country = scanner.nextLine();

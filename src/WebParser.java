@@ -5,6 +5,7 @@ import org.jsoup.select.Elements;
 
 import javax.print.Doc;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.*;
@@ -44,20 +45,38 @@ public class WebParser {
         }
     }
 
+    // ASK ABOUT COLOR!
     public static void questionTwo(Document doc) {
-        // BASE URL???????????
-        Set<String> countryCodes = new TreeSet<>();
+        String correctPage = "";
+        Set<String> countries = new TreeSet<>();
         Elements links = doc.select(".div-col");
-        String correctPage = "https://en.wikipedia.org" + links.get(1).select("a").attr("href");
-        Document newDoc = fetchPage(correctPage);
-        if (newDoc != null) {
-            if (newDoc.select("ul").size() >= 16) {
-                Element link = newDoc.select("ul").get(16);
-                System.out.println(link);
-                for (Element l : link) {
-                    System.out.println(l);
+        if (links != null) {
+            for (Element l : links) {
+                if (l.selectFirst("li") != null) {
+                    if (l.selectFirst("li").selectFirst("a") != null) {
+                        if (l.selectFirst("li").selectFirst("a").text().equals("List of participating nations at the Summer Olympic Games")) {
+                            correctPage = "https://en.wikipedia.org" + l.selectFirst("li").selectFirst("a").attr("href");
+                        }
+                    }
                 }
             }
+        }
+        Document newDoc = fetchPage(correctPage);
+        if (newDoc != null) {
+            Elements rows = searchTableGetRows("A", newDoc);
+            for (Element r : rows) {
+                if (r.selectFirst("td") != null) {
+                    if (r.selectFirst("td").attr("bgcolor").equals("#e0e0e0")) {
+                        if (r.selectFirst("a") != null) {
+                            countries.add(r.selectFirst("a").text());
+                        }
+                    }
+                }
+            }
+        }
+
+        for (String c : countries) {
+            System.out.println(c);
         }
     }
 
@@ -193,7 +212,11 @@ public class WebParser {
                                                                             if (r3.selectFirst("th") != null) {
                                                                                 if (r3.selectFirst("th").text().equals("Headquarters")) {
                                                                                     if (r3.selectFirst("td") != null) {
-                                                                                        if (r3.selectFirst("td").text().contains(country)) {
+                                                                                        if (country.equals("United States")) {
+                                                                                            if (r3.selectFirst("td").text().contains(country) || r3.selectFirst("td").text().contains("U.S.")) {
+                                                                                                total++;
+                                                                                            }
+                                                                                        } else if (r3.selectFirst("td").text().contains(country)) {
                                                                                             total++;
                                                                                         }
                                                                                     }
