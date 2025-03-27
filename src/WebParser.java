@@ -177,6 +177,10 @@ public class WebParser {
                                             if (r2.selectFirst("th").text().equals("Governing body")) {
                                                 if (r2.selectFirst("td") != null) {
                                                     if (r2.selectFirst("td").selectFirst("a") != null) {
+                                                        if (governingBodies.contains(r2.selectFirst("td").selectFirst("a").text())) {
+                                                            continue;
+                                                        }
+                                                        governingBodies.add(r2.selectFirst("td").selectFirst("a").text());
                                                         newDoc = fetchPage("https://en.wikipedia.org" + r2.selectFirst("td").selectFirst("a").attr("href"));
                                                         if (newDoc != null) {
                                                             Elements table = newDoc.select("table");

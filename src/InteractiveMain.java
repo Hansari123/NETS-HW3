@@ -124,12 +124,10 @@ public class InteractiveMain {
                 System.out.println("Find how many total medals " + country + " won in " + sport);
                 WebParser.questionFive(country, sport, homepage);
             } else if (input.equals("6")) {
-                System.out.println("You picked: Find how many governing bodies of the past or present sports from the Summer Olympics are\\n\" +\n" +
-                        "                \"headquartered in some country.");
+                System.out.println("You picked: Find how many governing bodies of the past or present sports from the Summer Olympics are headquartered in some country.");
                 System.out.println("Pick a country.");
                 String country = scanner.nextLine();
-                System.out.println("Find how many governing bodies of the past or present sports from the Summer Olympics are\\n\" +\n" +
-                                "                \"headquartered in " + country);
+                System.out.println("Find how many governing bodies of the past or present sports from the Summer Olympics are headquartered in " + country);
                 WebParser.questionSix(country, homepage);
             } else if (input.equals("7")) {
                 System.out.println(" ");
