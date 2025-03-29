@@ -26,7 +26,7 @@ public class InteractiveMain {
                 "headquartered in some country.");
         System.out.println("7. Among all Summer Olympics hosted in some country since some date, find how many countries the\n" +
                 "torch relay that covered the longest total distance passed through");
-        System.out.println("8. Wild card – come up with an interesting question. List the question and find the answer to it");
+        System.out.println("8. Wild card: Find the city and current Mayor of the city in which the Summer Olympics of some year took place.");
         System.out.println();
         System.out.println("Choose a question by typing 1-8 in the console!");
         while (true) {
@@ -87,7 +87,7 @@ public class InteractiveMain {
                     }
                 }
                 System.out.println();
-                System.out.println("List of all countries that have won at least " + numMedals + " silver medals in " + year);
+                System.out.println("Listing of all countries that have won at least " + numMedals + " silver medals in " + year);
                 WebParser.questionThree(numMedals, year, homepage);
             } else if (input.equals("4")) {
                 System.out.println("You picked: List all countries that had podium sweeps in some year.");
@@ -113,7 +113,7 @@ public class InteractiveMain {
                     }
                 }
                 System.out.println();
-                System.out.println("List of all countries that had podium sweeps in " + year);
+                System.out.println("Listing of all countries that had podium sweeps in " + year);
                 WebParser.questionFour(year, homepage);
             } else if (input.equals("5")) {
                 // ASSUMPTION: NO BAD INPUTS / CASING!
@@ -123,7 +123,7 @@ public class InteractiveMain {
                 System.out.println("Pick a sport");
                 String sport = scanner.nextLine();
                 System.out.println();
-                System.out.println("Find how many total medals " + country + " won in " + sport);
+                System.out.println("Finding how many total medals " + country + " won in " + sport);
                 WebParser.questionFive(country, sport, homepage);
             } else if (input.equals("6")) {
                 // UNITED STATES NOT US
@@ -133,9 +133,60 @@ public class InteractiveMain {
                 System.out.println("Finding how many governing bodies of past or present sports from the Summer Olympics are headquartered in " + country + "...");
                 WebParser.questionSix(country, homepage);
             } else if (input.equals("7")) {
-                System.out.println(" ");
+                System.out.println("You picked: Among all Summer Olympics hosted in some country since some date, find how many countries the torch relay that covered the longest total distance passed through.");
+                System.out.println("Pick a country.");
+                String country = scanner.nextLine();
+                boolean goodYear = false;
+                int year = 0;
+                while (!goodYear) {
+                    System.out.println("Which year would you like to inspect?");
+                    input = scanner.nextLine();
+                    int numDigits  = 0;
+                    if (input.length() == 4) {
+                        for (int i = 0; i < 4; i++) {
+                            if (Character.isDigit(input.charAt(i))) {
+                                numDigits++;
+                            }
+                        }
+                        if (numDigits == 4) {
+                            year = Integer.parseInt(input);
+                        }
+
+                        if (year <= 2024) {
+                            goodYear = true;
+                        }
+                    }
+                }
+                System.out.println();
+                System.out.println("Among all Summer Olympics hosted in " + country + " since " + year + " finding how many countries the torch relay that covered the longest total distance passed through...");
+                WebParser.questionSeven(country, year, homepage);
             } else if (input.equals("8")) {
-                System.out.println(" ");
+                System.out.println("You picked: Wild card: Find the city and current Mayor of the city in which the Summer Olympics of some year took place.");
+                boolean goodYear = false;
+                int year = 0;
+                while (!goodYear) {
+                    System.out.println("Which year would you like to inspect?");
+                    input = scanner.nextLine();
+                    int numDigits  = 0;
+                    if (input.length() == 4) {
+                        for (int i = 0; i < 4; i++) {
+                            if (Character.isDigit(input.charAt(i))) {
+                                numDigits++;
+                            }
+                        }
+                        if (numDigits == 4) {
+                            year = Integer.parseInt(input);
+                        }
+
+                        if (year >= 1896 && year % 4 == 0 && year <= 2024) {
+                            goodYear = true;
+                        }
+                    }
+                }
+                System.out.println();
+                System.out.println("Finding the city and current Mayor of the city in which the Summer Olympics of " + year + " took place");
+                WebParser w = new WebParser();
+                w.questionEight(year, homepage);
             }
         }
         scanner.close();
