@@ -159,6 +159,7 @@ public class InteractiveMain {
                 }
                 System.out.println();
                 System.out.println("Among all Summer Olympics hosted in " + country + " since " + year + " finding how many countries the torch relay that covered the longest total distance passed through...");
+                //WebParser.questionSevenOne(country, year, homepage);
                 WebParser.questionSeven(country, year, homepage);
             } else if (input.equals("8")) {
                 System.out.println("You picked: Wild card: Find the city and current Mayor of the city in which the Summer Olympics of some year took place.");

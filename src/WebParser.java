@@ -221,6 +221,7 @@ public class WebParser {
                                                         }
                                                         governingBodies.add(r2.selectFirst("td").selectFirst("a").text());
                                                         newDoc = fetchPage("https://en.wikipedia.org" + r2.selectFirst("td").selectFirst("a").attr("href"));
+                                                        // fifa+ is an extension of fifa so its counted (ASSUMPTION)
                                                         if (newDoc != null) {
                                                             Elements table = newDoc.select("table");
                                                             for (Element t : table) {
@@ -229,7 +230,7 @@ public class WebParser {
                                                                         Elements rows3 = t.select("tr");
                                                                         for (Element r3 : rows3) {
                                                                             if (r3.selectFirst("th") != null) {
-                                                                                if (r3.selectFirst("th").text().equals("Headquarters")) {
+                                                                                if (r3.selectFirst("th").text().equals("Headquarters")) { //ASSUME FIRST TABLE WITH HEADQUARTERS IS THE ONE
                                                                                     if (r3.selectFirst("td") != null) {
                                                                                         if (country.equals("United States")) {
                                                                                             if (r3.selectFirst("td").text().contains(country) || r3.selectFirst("td").text().contains("U.S.")) {
@@ -261,58 +262,11 @@ public class WebParser {
         System.out.println(total);
     }
 
-    public static void questionSevenEh(String country, int year, Document doc) {
-        String correctPage = "";
-        Elements rows = searchTableGetRows("Olympiad", doc);
-        for (Element row : rows) {
-            if (row.selectFirst("td") != null) {
-                // ASSUMING THIS WILL ALWAYS BE AN INTEGER
-                if (Integer.parseInt(row.selectFirst("td").text().substring(0,4)) >= year) {
-                    if (row.select("td").size() >= 3) {
-                        if (row.select("td").get(2).selectFirst("a") != null) {
-                            if (row.select("td").get(2).selectFirst("a").attr("title") != null) {
-                                if (row.select("td").get(2).selectFirst("a").attr("title").equals(country)) {
-                                    if (row.select("td").get(1).selectFirst("a") != null) {
-                                        Element link = row.select("td").get(1).selectFirst("a");
-                                        correctPage = "https://en.wikipedia.org" + link.attr("href");
-                                        System.out.println(correctPage);
-                                    } else {
-                                        if (row.selectFirst("th") != null) {
-                                            if (Integer.parseInt(row.selectFirst("th").text().substring(0,4)) >= year) {
-                                                if (row.selectFirst("a") != null) {
-                                                    correctPage = "https://en.wikipedia.org" + row.selectFirst("a").attr("href");
-                                                    System.out.println(correctPage);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (!correctPage.isEmpty()) {
-                Document newDoc = fetchPage(correctPage);
-                if (newDoc != null) {
-
-                }
-
-            }
-
-
-
-
-
-        }
-
-
-
-    }
-
-
-    public static void questionSeven(String country, int year, Document doc) {
+/*
+    public static void questionSevenOne(String country, int year, Document doc) {
         // GET THE YEARS, GET THE LIST OF TORCH RELAYS, CHECK THE YEARS
+
+
         boolean countryFound = false;
         Set<String> countries = new TreeSet<>();
         Set<String> correctYears = new TreeSet<>();
@@ -424,6 +378,103 @@ public class WebParser {
                     }
                 }
             }
+            System.out.println(finalCount);
+        }
+    }
+
+     */
+
+    public static void questionSeven(String country, int year, Document doc) {
+        String correctPage = "";
+        Elements links = doc.select("a");
+        if (links != null) {
+            for (Element link : links) {
+                if (link.text().equals("Torch relays")) {
+                    correctPage = "https://en.wikipedia.org" + link.attr("href");
+                }
+            }
+        }
+        boolean countryFound = false;
+        boolean entered = false;
+        String newPage = "";
+        int currentYear = year;
+        int longestDistance = 0;
+        int finalCount = 0;
+        if (!correctPage.isEmpty()) {
+            Document newDoc = fetchPage(correctPage);
+            if (newDoc != null) {
+                Elements rows = searchTableGetRows("Site of the Olympic Games", newDoc);
+                for (Element row : rows) {
+                    if (row.selectFirst("td") != null) {
+                        if (row.selectFirst("td").selectFirst("a") != null) {
+                            if (row.selectFirst("td").selectFirst("a").attr("title").contains(country)) {
+                                String pattern = ".*(\\d{4}).*";
+                                Pattern p = Pattern.compile(pattern);
+                                Matcher m = p.matcher(row.selectFirst("td").select("a").get(row.selectFirst("td").select("a").size() - 1).text());
+                                if (m.find()) {
+                                    if (Integer.parseInt(m.group(1)) >= year) {
+                                        if (row.select("td").get(2) != null) {
+                                            if (!row.select("td").get(2).text().equals("-") && !row.select("td").get(2).text().equals("") && Integer.parseInt(removeCommas(row.select("td").get(2).text())) > longestDistance) {
+                                                currentYear = Integer.parseInt(m.group(1));
+                                                longestDistance = Integer.parseInt(removeCommas(row.select("td").get(2).text()));
+                                                countryFound = true;
+                                                if (row.select("td").get(4).selectFirst("a") != null) {
+                                                    if (row.select("td").get(4).selectFirst("a").text().equals(currentYear + " Summer Olympics torch relay")) {
+                                                        newPage = "https://en.wikipedia.org" + row.select("td").get(4).selectFirst("a").attr("href");
+                                                        entered = false;
+                                                    } else {
+                                                        entered = true;
+                                                        newPage = "";
+                                                        String parse = row.select("td").get(4).text();
+                                                        for (int i = 0; i < parse.length(); i++) {
+                                                            if (parse.charAt(i) == '(') {
+                                                                if (i < parse.length() - 3) {
+                                                                    if (parse.charAt(i + 1) == 'b' && parse.charAt(i + 2) == 'y') {
+                                                                        continue;
+                                                                    } else {
+                                                                        finalCount++;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (!countryFound) {
+                System.out.println("Invalid Host Country (potentially for the provided year)!");
+                return;
+            }
+
+            if (!entered) {
+                finalCount = 1;
+                if (!newPage.isEmpty()) {
+                    Document d = fetchPage(newPage);
+                    if (d != null) {
+                        Elements rows4 = searchTableContains("Countries visited", d);
+                        for (Element r4: rows4) {
+                            if (r4.selectFirst("th") != null) {
+                                if (r4.selectFirst("th").text().equals("Countries visited")) {
+                                    if (r4.selectFirst("td") != null) {
+                                        for (int i = 0; i < r4.selectFirst("td").text().length(); i++) {
+                                            if (r4.selectFirst("td").text().charAt(i) == ',') {
+                                                finalCount++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             System.out.println(finalCount); //IRELAND PART OF THE UK???????????????????????
         }
     }
@@ -438,6 +489,8 @@ public class WebParser {
         }
         return fixed;
     }
+
+
 
     public static String getListOfTorchRelaysPage(Document doc) {
         String correctPage = getYearPage(searchTableGetRows("Olympiad", doc), 1936, doc); //HARDCODE??????????????
@@ -454,6 +507,8 @@ public class WebParser {
         }
         return "";
     }
+
+
 
     public void questionEight(int year, Document doc) {
         String city = "";
