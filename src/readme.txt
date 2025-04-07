@@ -74,12 +74,49 @@ the country won
 5. The last row of the "Sport" table will have the total medals for the given sport.
 Answer: 13
 
-Question 6:
+Question 6: For each row of the "Sport" table, I follow the link corresponding to the sport
+name. I then search for the table that contains the words "Governing Body". From there, I
+follow the link corresponding to "Governing Body". From there, I search for headquarters and
+see if the country I'm searching for appears in the text next to "headquarters". If so, I add
+1 to my count and output the total once all sports have been inspected.
 Assumptions:
+1. "Sport" table will not change (not the name, not the links corresponding to the sports).
+2. If "Governing body" is not found, that sport has no governing body
+3. United States should be entered when searching for US
+4. If we encounter "headquarter" in a table, directly adjacent to it will be the names of the countries of interest
+5. If there is no text directly next to the "headquarter" text we will not do anything more
+6. We will only be counting each organization once to avoid double counting
+7. Whenever we see "headquarter" on a table on the page, the text following will count: For example,
+ fifa+ is an extension of fifa so it's counted for France even though it is not on the first table.
 Answer: 20
 
-Question 7:
+Question 7: I first find the link on the base Wikipedia page called "Torch relays". I follow the link.
+Then, I iterate over the "Site of the Olympic Games" table. I check if the current row's flag text
+contains the country name. If so, I find the corresponding distance. If the distance is bigger than
+the previously found distance for the country, I update the variables accordingly. Once I am able
+to find the row corresponding to the max distance for a given country, I check if the last column of
+the table includes a link to the Summer Olympics page for the given year. If it does not, I iterate
+over the last column of the table and manually calculate the countries (which are those in the parenthesis).
+Otherwise, I follow the link and search for "countries visited". I count the number of countries visited
+based on the number of commas seen.
 Assumptions:
+1. Users should only enter valid years (years relating to an actual Olympics year)
+2. When counting the number of countries, the counted countries will always be separated
+by a comma. If there's countries like: United Kingdom and Ireland listed without a comma
+it will be counted as 1 country. Similarly, with France and Monoco - it will get counted as
+one country because there is no comma.
+3. The "Torch relays" link will not change names
+4. The "Site of the Olympic Games" table will not change name
+5. The flag name will not get rid of the country name
+6. The distance will be in the 3rd column
+7. The country names will always be in parentheses for those countries who do not have
+an article linked
+8. The last column of the "Site of the Olympic Games" table will contain the list of countries
+visited.
+9. France only has 1 hosting that involved torch relays so the distance for France will not get
+compared. This is handling the edge case for someone typing in "France" but not getting a result
+because there is no distance listed.
+10. No country name starts with "by"
 Answer: 2
 
 Question 8:
@@ -88,28 +125,6 @@ Answer (Default input: 2012): The city was London and the current mayor is Sadiq
 
 
 
-
- // // UNITED STATES NOT US Q6 // Q7 NOT GOING TO ENTER YEAR BEFORE OLYMPICS STARTED
-
-
-// HANDLE FRANCE IN Q7 France and Monocco// VALID SILVER MEDALS
-valid year for q7!
-
-
 Q8 LORD MAYOR
-
-
- //IRELAND PART OF THE UK???????????????????????Q7 "AND"
-
-
- //ASSUME FIRST TABLE WITH HEADQUARTERS IS THE ONE OR IF ANY HEAD GOOD
-
-
- // fifa+ is an extension of fifa so its counted (ASSUMPTION)
-
-
- / ASSUMPTION: VALID COUNTRY GIVEN first box!!!!! what counts!
-         // UNITED KINGDOM!!!!!!!!!!
-         // HEADQUARTER THEN RIGHT AFTER IS THE COUNTRY
 
          // Q8: SOME CITIES CANT GET MAYORS ETC
