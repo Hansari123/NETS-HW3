@@ -83,26 +83,24 @@ public class WebParser {
     public static void questionTwo(Document doc) {
         String correctPage = "";
         Set<String> countries = new TreeSet<>();
-        Elements links = doc.select(".div-col");
+        Elements links = doc.select("a");
         if (links != null) {
             for (Element l : links) {
-                if (l.selectFirst("li") != null) {
-                    if (l.selectFirst("li").selectFirst("a") != null) {
-                        if (l.selectFirst("li").selectFirst("a").text().equals("List of participating nations at the Summer Olympic Games")) {
-                            correctPage = l.selectFirst("li").selectFirst("a").attr("abs:href");
-                        }
-                    }
+                if (l.text().equals("List of participating nations at the Summer Olympic Games")) {
+                    correctPage = l.attr("abs:href");
                 }
             }
         }
-        Document newDoc = fetchPage(correctPage);
-        if (newDoc != null) {
-            Elements rows = searchTableGetRows("A", newDoc);
-            for (Element r : rows) {
-                if (r.selectFirst("td") != null) {
-                    if (r.selectFirst("td").attr("bgcolor").equals("#e0e0e0")) {
-                        if (r.selectFirst("a") != null) {
-                            countries.add(r.selectFirst("a").text());
+        if (!correctPage.isEmpty()) {
+            Document newDoc = fetchPage(correctPage);
+            if (newDoc != null) {
+                Elements rows = searchTableGetRows("A", newDoc);
+                for (Element r : rows) {
+                    if (r.selectFirst("td") != null) {
+                        if (r.selectFirst("td").attr("bgcolor").equals("#e0e0e0")) {
+                            if (r.selectFirst("a") != null) {
+                                countries.add(r.selectFirst("a").text());
+                            }
                         }
                     }
                 }
@@ -211,7 +209,6 @@ public class WebParser {
                 }
             }
         }
-        System.out.println(correctPage);
         if (!correctPage.isEmpty()) {
             Document newDoc = fetchPage(correctPage);
             if (newDoc != null) {
