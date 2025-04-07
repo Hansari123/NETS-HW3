@@ -1,3 +1,6 @@
+You should open the "Interactive Main" file and press run. From there you
+will be able to see the prompts and interact with the program.
+
 Overall Assumptions: Users will not enter any "bad"/"faulty"
 inputs, "table name" is the name found at the top left part
 of the table, Summer Olympics were cancelled in 1916, 1940, 1944.
@@ -103,7 +106,7 @@ Assumptions:
 1. Users should only enter valid years (years relating to an actual Olympics year)
 2. When counting the number of countries, the counted countries will always be separated
 by a comma. If there's countries like: United Kingdom and Ireland listed without a comma
-it will be counted as 1 country. Similarly, with France and Monoco - it will get counted as
+it will be counted as 1 country. Similarly, with France and Monaco - it will get counted as
 one country because there is no comma.
 3. The "Torch relays" link will not change names
 4. The "Site of the Olympic Games" table will not change name
@@ -119,12 +122,14 @@ because there is no distance listed.
 10. No country name starts with "by"
 Answer: 2
 
-Question 8:
+Question 8: I begin by iterating over the "Olympiad" table and getting the link associated to the
+year of interest from the third column. I search for the table that contains "location". I follow the
+first associated link. I search for "mayor" and output the text that follows directly after.
 Assumptions:
+1. Lord Mayor is valid as "Mayor"
+2. The cities for which we cannot find the mayors, we will assume that there is no mayor.
+3. The "location" text will be followed immediately by a link to the Wiki page of the host
+city (for some this may not exist and that's okay - we assume no mayor exists).
+4. Only the text directly next to the "mayor" text will be considered when finding the mayor.
+This means we will not be looking at oddly formatted boxes.
 Answer (Default input: 2012): The city was London and the current mayor is Sadiq Khan.
-
-
-
-Q8 LORD MAYOR
-
-         // Q8: SOME CITIES CANT GET MAYORS ETC
