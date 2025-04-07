@@ -123,8 +123,9 @@ because there is no distance listed.
 Answer: 2
 
 Question 8: I begin by iterating over the "Olympiad" table and getting the link associated to the
-year of interest from the third column. I search for the table that contains "location". I follow the
-first associated link. I search for "mayor" and output the text that follows directly after.
+year of interest from the third column. On the year's page, I search for the table that contains
+"location". Once found, I follow the first associated link. I search for "mayor" in the tables of this
+new page and output the text that follows directly after "mayor".
 Assumptions:
 1. Lord Mayor is valid as "Mayor"
 2. The cities for which we cannot find the mayors, we will assume that there is no mayor.
