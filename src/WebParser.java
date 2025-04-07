@@ -2,10 +2,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import javax.print.Doc;
 import java.io.IOException;
-import java.lang.constant.DynamicCallSiteDesc;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,15 +11,24 @@ import java.util.regex.Pattern;
 
 public class WebParser {
     private HashMap<String, String> locationToMayor;
-    String currentCity;
 
+    /**
+     * This is our WebParser constructor. It initializes our
+     * locationToMayor instance variable. We add the city as
+     * a key and the value as the mayor. This way we are able
+     * to store all the cities and their corresponding mayors
+     * in a compact fashion.
+     */
     public WebParser() {
         locationToMayor = new HashMap<>();
-        currentCity = "";
     }
 
-    /*
-     * Fetches and returns the Document for a given URL
+    /**
+     * This method takes in a URL and fetches the corresponding page
+     * if it exists and outputs it as a document.
+     *
+     * @param url The String url of the page we are interested in
+     * @return The document version of the provided String url
      */
     public static Document fetchPage(String url) {
         try {
@@ -33,10 +39,16 @@ public class WebParser {
         }
     }
 
-    //ASSUMPTION: SUMMER OLYMPICS
-
-    // 1916!!!!!!!!!!!!!!!
-
+    /**
+     * This method finds all the past and present Olympic sports that
+     * start with some specified letter. We search for a table whose
+     * name is "Sport". Then, we store the names of all the sports we
+     * found by iterating over the table. We output only those that
+     * match the specified letter.
+     *
+     * @param letter The letter for which we want to find Olympic sports
+     * @param doc The document we will be searching over to find the sports
+     */
     public static void questionOne(String letter, Document doc) {
         Set<String> names = new TreeSet<>();
         Elements rows = searchTableGetRows("Sport", doc);
@@ -59,7 +71,15 @@ public class WebParser {
         }
     }
 
-    // ASK ABOUT COLOR!
+    /**
+     * This method finds the list of all countries that have participated in the Olympics,
+     * but are now considered "obsolete". We search for a link called "List of participating
+     * nations at the Summer Olympic Games". We go to the page of that link, and we search for
+     * a table called "A". Then, we store all the "obsolete" nations based on the color of the
+     * table entry. We output all the obsolete nations found
+     *
+     * @param doc The document we will be searching over to find the obsolete nations
+     */
     public static void questionTwo(Document doc) {
         String correctPage = "";
         Set<String> countries = new TreeSet<>();
@@ -69,7 +89,7 @@ public class WebParser {
                 if (l.selectFirst("li") != null) {
                     if (l.selectFirst("li").selectFirst("a") != null) {
                         if (l.selectFirst("li").selectFirst("a").text().equals("List of participating nations at the Summer Olympic Games")) {
-                            correctPage = "https://en.wikipedia.org" + l.selectFirst("li").selectFirst("a").attr("href");
+                            correctPage = l.selectFirst("li").selectFirst("a").attr("abs:href");
                         }
                     }
                 }
@@ -88,12 +108,22 @@ public class WebParser {
                 }
             }
         }
-
         for (String c : countries) {
             System.out.println(c);
         }
     }
 
+    /**
+     * This method finds the list of countries that have won some number
+     * of silver medals in a given year. We first look for a table called
+     * "Olympiad" and we go to the link relating to the user's preferred year.
+     * From there, we find a table called Rank and store all the countries
+     * who have >= "atLeast" silver medals. We output all of these countries.
+     *
+     * @param atLeast The minimum number of silver medals we are looking for
+     * @param year The year for which we are inspecting the silver medals
+     * @param doc The document we will begin at for our search for the countries of interest
+     */
     public static void questionThree(int atLeast, int year, Document doc) {
         String correctPage = getYearPage(searchTableGetRows("Olympiad", doc), year, doc);
         Set<String> countries = new TreeSet<>();
@@ -102,9 +132,7 @@ public class WebParser {
             if (newDoc != null) {
                 Elements rows2 = searchTableGetRows("Rank", newDoc);
                 for (Element row : rows2) {
-                    // Check if first "td" tag within the row is not null
                     if (row.select("td").size() >= 3) {
-                        // Check if we are inspecting the correct year/row
                         if (Integer.parseInt(row.select("td").get(2).text()) >= atLeast) {
                             if (row.selectFirst("th") != null) {
                                 if (row.selectFirst("th").selectFirst("a") != null) {
@@ -126,7 +154,14 @@ public class WebParser {
         }
     }
 
-    // CHECK 1916!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ASK ERROR HANDLING!!!!!!!!!!!!!!!!!! ASK IF THESE ARE ALL PODIUM SWEEPS!
+    /**
+     * This method finds the list of countries that had podium sweeps in a given year.
+     * We go to the year of interest page found in the "Olympiad" table. From there,
+     * we find the "Date" table and output the countries found.
+     *
+     * @param year The year for which we want to find podium sweeps
+     * @param doc The document we will begin at to find the podium sweeps
+     */
     public static void questionFour(int year, Document doc) {
         String correctPage = getYearPage(searchTableGetRows("Olympiad", doc), year, doc);
         if (correctPage.isEmpty()) {
@@ -154,37 +189,53 @@ public class WebParser {
         }
     }
 
-    // HOW TO HANDLE THOSE WITH 0 !!!!!!!!!!!!!!!!!
+    /**
+     * This method finds the total number of medals some country won in
+     * some sport. We will first look for the "All-time" medals link.
+     * From there, we will go to the team table and go to the link for
+     * the country of interest. We go to the sport tables and find the
+     * sport of interest. From there, we output the total.
+     *
+     * @param country The country whose total medals we are finding
+     * @param sport The sport whose medals we are interested in
+     * @param doc The document we will begin at to find the total medals
+     */
     public static void questionFive(String country, String sport, Document doc) {
         String total = "None";
-        // ASK THIS!!!!!!!!!!!!
-        Elements links = doc.select(".hatnote.navigation-not-searchable");
-        String correctPage = "https://en.wikipedia.org" + links.get(2).select("a").attr("href");
-        Document newDoc = fetchPage(correctPage);
-        if (newDoc != null) {
-            Elements rows = searchTableGetRows("Team", newDoc);
-            for (Element row : rows) {
-                // Check if first "td" tag within the row is not null
-                if (row.selectFirst("td") != null) {
-                    // Check if first "a" instance is not null
-                    if (row.selectFirst("td").selectFirst("a") != null) {
-                        if (row.selectFirst("td").selectFirst("a").text().equals(country)) {
-                            Element link = row.selectFirst("td").selectFirst("a");
-                            correctPage = "https://en.wikipedia.org" + link.attr("href");
-                            newDoc = fetchPage(correctPage);
+        String correctPage = "";
+        Elements links = doc.select("a");
+        if (links != null) {
+            for (Element link : links) {
+                if (link.text().equals("All-time Olympic Games medal table")) {
+                    correctPage = link.attr("abs:href");
+                }
+            }
+        }
+        System.out.println(correctPage);
+        if (!correctPage.isEmpty()) {
+            Document newDoc = fetchPage(correctPage);
+            if (newDoc != null) {
+                Elements rows = searchTableGetRows("Team", newDoc);
+                for (Element row : rows) {
+                    if (row.selectFirst("td") != null) {
+                        if (row.selectFirst("td").selectFirst("a") != null) {
+                            if (row.selectFirst("td").selectFirst("a").text().equals(country)) {
+                                Element link = row.selectFirst("td").selectFirst("a");
+                                correctPage = link.attr("abs:href");
+                                newDoc = fetchPage(correctPage);
+                            }
                         }
                     }
                 }
             }
-        }
-        if (newDoc != null) {
-            Elements rows2 = searchTableGetRows("Sport", newDoc);
-            for (Element row : rows2) {
-                // Check if first "td" tag within the row is not null
-                if (row.selectFirst("a") != null) {
-                    if (row.selectFirst("a").text().equals(sport)) {
-                        if (row.select("td").size() >= 4) {
-                            total = row.select("td").get(3).text();
+            if (newDoc != null) {
+                Elements rows2 = searchTableGetRows("Sport", newDoc);
+                for (Element row : rows2) {
+                    if (row.selectFirst("a") != null) {
+                        if (row.selectFirst("a").text().equals(sport)) {
+                            if (row.select("td").size() >= 4) {
+                                total = row.select("td").get(3).text();
+                            }
                         }
                     }
                 }
@@ -193,17 +244,24 @@ public class WebParser {
         System.out.println(total);
     }
 
+    /**
+     * This method finds the number of governing bodies of the past or present sports
+     * from the Summer Olympics which are located in a specific country. We will
+     * iterate over all the rows of the sports table, go to the link, find the link
+     * called "governing bodies" and find headquarters and count if our country of
+     * interest shows up. We return the total count.
+     *
+     * @param country The country we want to inspect as a headquarter
+     * @param doc The document at which we begin our search
+     */
     public static void questionSix(String country, Document doc) {
         Set<String> governingBodies = new TreeSet<>();
-        // ASSUMPTION: VALID COUNTRY GIVEN
-        // UNITED KINGDOM!!!!!!!!!!
-        // HEADQUARTER THEN RIGHT AFTER IS THE COUNTRY
         int total = 0;
         Elements rows = searchTableGetRows("Sport", doc);
         for (Element row : rows) {
             if (row.selectFirst("td") != null) {
                 if (row.selectFirst("td").selectFirst("a") != null) {
-                    String correctPage = "https://en.wikipedia.org" + row.selectFirst("td").selectFirst("a").attr("href");
+                    String correctPage = row.selectFirst("td").selectFirst("a").attr("abs:href");
                     Document newDoc = fetchPage(correctPage);
                     if (newDoc != null) {
                         Elements table1 = newDoc.select("table");
@@ -220,8 +278,7 @@ public class WebParser {
                                                             continue;
                                                         }
                                                         governingBodies.add(r2.selectFirst("td").selectFirst("a").text());
-                                                        newDoc = fetchPage("https://en.wikipedia.org" + r2.selectFirst("td").selectFirst("a").attr("href"));
-                                                        // fifa+ is an extension of fifa so its counted (ASSUMPTION)
+                                                        newDoc = fetchPage(r2.selectFirst("td").selectFirst("a").attr("abs:href"));
                                                         if (newDoc != null) {
                                                             Elements table = newDoc.select("table");
                                                             for (Element t : table) {
@@ -230,7 +287,7 @@ public class WebParser {
                                                                         Elements rows3 = t.select("tr");
                                                                         for (Element r3 : rows3) {
                                                                             if (r3.selectFirst("th") != null) {
-                                                                                if (r3.selectFirst("th").text().equals("Headquarters")) { //ASSUME FIRST TABLE WITH HEADQUARTERS IS THE ONE
+                                                                                if (r3.selectFirst("th").text().equals("Headquarters")) {
                                                                                     if (r3.selectFirst("td") != null) {
                                                                                         if (country.equals("United States")) {
                                                                                             if (r3.selectFirst("td").text().contains(country) || r3.selectFirst("td").text().contains("U.S.")) {
@@ -262,135 +319,24 @@ public class WebParser {
         System.out.println(total);
     }
 
-/*
-    public static void questionSevenOne(String country, int year, Document doc) {
-        // GET THE YEARS, GET THE LIST OF TORCH RELAYS, CHECK THE YEARS
-
-
-        boolean countryFound = false;
-        Set<String> countries = new TreeSet<>();
-        Set<String> correctYears = new TreeSet<>();
-        Elements rows = searchTableGetRows("Olympiad", doc);
-        for (Element row : rows) {
-            if (row.selectFirst("td") != null) {
-                // ASSUMING THIS WILL ALWAYS BE AN INTEGER
-                if (Integer.parseInt(row.selectFirst("td").text().substring(0,4)) >= year && Integer.parseInt(row.selectFirst("td").text().substring(0,4)) <= 2024) {
-                    if (row.select("td").size() >= 3) {
-                        if (row.select("td").get(2).selectFirst("a") != null) {
-                            if (row.select("td").get(2).selectFirst("a").attr("title") != null) {
-                                if (row.select("td").get(2).selectFirst("a").attr("title").contains(country)) {
-                                    correctYears.add(row.selectFirst("td").text().substring(0,4));
-                                    countryFound = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (!countryFound) {
-            System.out.println("Invalid Host Country (potentially for the provided year)!");
-        } else {
-            int count = 0;
-            for (String y : correctYears) {
-                if (Integer.parseInt(y) < 1936) {
-                    count++;
-                }
-            }
-            if (count == correctYears.size()) {
-                System.out.println("No torch relay info available at this host country. 1936 started the torch relays");
-                return;
-            }
-            int finalCount = 0;
-            boolean entered = false;
-            int longestDistance = 0;
-            String page = "";
-            String listPage = getListOfTorchRelaysPage(doc);
-            if (!listPage.isEmpty()) {
-                Document newDoc = fetchPage(listPage);
-                if (newDoc != null) {
-                    Elements rows2 = searchTableGetRows("Site of the Olympic Games", newDoc);
-                    for (Element r2 : rows2) {
-                        //ASSUME ALL CLICKABLE
-                        if (r2.selectFirst("td") != null) {
-                            if (r2.selectFirst("td").selectFirst("a") != null) {
-                                String pattern = ".*(\\d{4}).*";
-                                Pattern p = Pattern.compile(pattern);
-                                Matcher m = p.matcher(r2.selectFirst("td").select("a").get(r2.selectFirst("td").select("a").size() - 1).text());
-                                if (m.find()) {
-                                    for (String s : correctYears) {
-                                        if (m.group(1).equals(s)) {
-                                            if (r2.select("td").get(2) != null) {
-                                                if (!r2.select("td").get(2).text().equals("-") && Integer.parseInt(removeCommas(r2.select("td").get(2).text())) > longestDistance) {
-                                                    longestDistance = Integer.parseInt(removeCommas(r2.select("td").get(2).text()));
-                                                    year = Integer.parseInt(s);
-                                                    if (r2.select("td").get(4).selectFirst("a") != null) {
-                                                        if (r2.select("td").get(4).selectFirst("a").text().equals(year + " Summer Olympics torch relay")) {
-                                                            page = "https://en.wikipedia.org" + r2.select("td").get(4).selectFirst("a").attr("href");
-                                                            entered = false;
-                                                        } else {
-                                                            entered = true;
-                                                            page = "";
-                                                            String parse = r2.select("td").get(4).text();
-                                                            for (int i = 0; i < parse.length(); i++) {
-                                                                if (parse.charAt(i) == '(') {
-                                                                    if (i < parse.length() - 3) {
-                                                                        if (parse.charAt(i + 1) == 'b' && parse.charAt(i + 2) == 'y') {
-                                                                            continue;
-                                                                        } else {
-                                                                            finalCount++;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!entered) {
-                finalCount = 1;
-                if (!page.isEmpty()) {
-                    Document d = fetchPage(page);
-                    if (d != null) {
-                        Elements rows4 = searchTableContains("Countries visited", d);
-                        for (Element r4: rows4) {
-                            if (r4.selectFirst("th") != null) {
-                                if (r4.selectFirst("th").text().equals("Countries visited")) {
-                                    if (r4.selectFirst("td") != null) {
-                                        for (int i = 0; i < r4.selectFirst("td").text().length(); i++) {
-                                            if (r4.selectFirst("td").text().charAt(i) == ',') {
-                                                finalCount++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            System.out.println(finalCount);
-        }
-    }
-
+    /**
+     * We want to find among all Summer Olympics hosted in some country since some year,
+     * the number of countries the longest distance torch relay passed through. We will go
+     * to the torch relays page, iterate over all the distances corresponding
+     * to the specified country, and returning the count of countries for the largest
+     * distance relay.
+     *
+     * @param country The country whose torch relay we are interested in
+     * @param year The year we want to use as our starting point
+     * @param doc The document we will begin our search with
      */
-
     public static void questionSeven(String country, int year, Document doc) {
         String correctPage = "";
         Elements links = doc.select("a");
         if (links != null) {
             for (Element link : links) {
                 if (link.text().equals("Torch relays")) {
-                    correctPage = "https://en.wikipedia.org" + link.attr("href");
+                    correctPage = link.attr("abs:href");
                 }
             }
         }
@@ -414,13 +360,15 @@ public class WebParser {
                                 if (m.find()) {
                                     if (Integer.parseInt(m.group(1)) >= year) {
                                         if (row.select("td").get(2) != null) {
-                                            if (!row.select("td").get(2).text().equals("-") && !row.select("td").get(2).text().equals("") && Integer.parseInt(removeCommas(row.select("td").get(2).text())) > longestDistance) {
+                                            if (country.equals("France") || (!row.select("td").get(2).text().equals("-") && !row.select("td").get(2).text().equals("") && Integer.parseInt(removeCommas(row.select("td").get(2).text())) > longestDistance)) {
                                                 currentYear = Integer.parseInt(m.group(1));
-                                                longestDistance = Integer.parseInt(removeCommas(row.select("td").get(2).text()));
                                                 countryFound = true;
+                                                if (!country.equals("France")) {
+                                                    longestDistance = Integer.parseInt(removeCommas(row.select("td").get(2).text()));
+                                                }
                                                 if (row.select("td").get(4).selectFirst("a") != null) {
                                                     if (row.select("td").get(4).selectFirst("a").text().equals(currentYear + " Summer Olympics torch relay")) {
-                                                        newPage = "https://en.wikipedia.org" + row.select("td").get(4).selectFirst("a").attr("href");
+                                                        newPage = row.select("td").get(4).selectFirst("a").attr("abs:href");
                                                         entered = false;
                                                     } else {
                                                         entered = true;
@@ -452,7 +400,6 @@ public class WebParser {
                 System.out.println("Invalid Host Country (potentially for the provided year)!");
                 return;
             }
-
             if (!entered) {
                 finalCount = 1;
                 if (!newPage.isEmpty()) {
@@ -475,41 +422,18 @@ public class WebParser {
                     }
                 }
             }
-            System.out.println(finalCount); //IRELAND PART OF THE UK???????????????????????
+            System.out.println(finalCount);
         }
     }
 
-    public static String removeCommas(String distance) {
-        String fixed = "";
-        for (int i = 0; i < distance.length(); i++) {
-            if (distance.charAt(i) != ',') {
-                fixed = fixed + distance.charAt(i);
-            }
-
-        }
-        return fixed;
-    }
-
-
-
-    public static String getListOfTorchRelaysPage(Document doc) {
-        String correctPage = getYearPage(searchTableGetRows("Olympiad", doc), 1936, doc); //HARDCODE??????????????
-        if (!correctPage.isEmpty()) {
-            Document newDoc = fetchPage(correctPage);
-            Elements words = newDoc.select("p");
-            for (Element p : words) {
-                if (p.selectFirst("a") != null) {
-                    if (p.selectFirst("a").text().equals("first of its kind")) { //HARDCODE??????????????????
-                        return "https://en.wikipedia.org" + p.selectFirst("a").attr("href");
-                    }
-                }
-            }
-        }
-        return "";
-    }
-
-
-
+    /**
+     * This method finds the city and current Mayor of the city in which the Summer Olympics of some year took place.
+     * We go to the year page, we find the host city, we follow the link, we search for mayor, and return the
+     * name and city.
+     *
+     * @param year The year whose Olympics we are interested in
+     * @param doc The document we will begin our search at
+     */
     public void questionEight(int year, Document doc) {
         String city = "";
         String mayor = "";
@@ -533,7 +457,7 @@ public class WebParser {
                                             }
                                             if (r.selectFirst("a") != null) {
                                                 if (r.selectFirst("a").text().equals(city)) {
-                                                    correctPage = "https://en.wikipedia.org" + r.selectFirst("a").attr("href");
+                                                    correctPage = r.selectFirst("a").attr("abs:href");
                                                 }
                                                 foundCity = true;
                                             }
@@ -557,9 +481,9 @@ public class WebParser {
                             Elements rs = t.select("tr");
                             for (Element e : rs) {
                                 if (e.selectFirst("a") != null && !updated) {
-                                    if (e.selectFirst("a").text().contains("Mayor") || e.selectFirst("a").text().contains("Lord mayor")) { // HARDCODE????
+                                    if (e.selectFirst("a").text().contains("Mayor") || e.selectFirst("a").text().contains("Lord mayor")) {
                                         if (e.select("a").size() > 1) {
-                                            if (e.select("a").get(1).text().length() > 3) { //HARDCODE!!!!!!!!!!!!!!!!!!!!!
+                                            if (e.select("a").get(1).text().length() > 3) {
                                                 mayor = e.select("a").get(1).text();
                                                 if (!locationToMayor.containsKey(city)) {
                                                     locationToMayor.put(city, mayor);
@@ -571,7 +495,7 @@ public class WebParser {
                                         if (e.selectFirst("th") != null) {
                                             if (e.selectFirst("th").text().contains("Mayor") || e.selectFirst("a").text().contains("Lord mayor")) {
                                                 if (e.selectFirst("a") != null) {
-                                                    if (e.selectFirst("a").text().length() > 3) { //HARDCODE!!!!!!!!!!!!!!!!!!!!!
+                                                    if (e.selectFirst("a").text().length() > 3) {
                                                         mayor = e.selectFirst("a").text();
                                                         if (!locationToMayor.containsKey(city)) {
                                                             locationToMayor.put(city, mayor);
@@ -598,21 +522,20 @@ public class WebParser {
         }
     }
 
-
-
-
-
+    /**
+     * Looks for the table with a name equal to "tableName".
+     * Returns the rows of the found table or empty if not found.
+     *
+     * @param tableName The name we are searching for
+     * @param doc The document over which we are looking for the table
+     * @return returns the rows of the found table (empty if not found)
+     */
     private static Elements searchTableGetRows(String tableName, Document doc) {
         Elements table = doc.select("table");
-        // iterating over all tables
         for (Element t : table) {
-            //if table is null go next
             if (t != null) {
-                // if header of table is null go next (we want the name of the first part of the header)
                 if (t.selectFirst("th") != null) {
-                    // If first part of the header is Sport, then we found the correct table
                     if (t.selectFirst("th").text().equals(tableName)) {
-                        // We get all the rows within that table
                         return t.select("tr");
                     }
                 }
@@ -621,13 +544,35 @@ public class WebParser {
         return new Elements();
     }
 
+    /**
+     * This method takes in a string and removes all the commas
+     * from the string and returns the comma-less string.
+     *
+     * @param distance the String from which to remove commas
+     * @return returns the String with commas removed
+     */
+    public static String removeCommas(String distance) {
+        String fixed = "";
+        for (int i = 0; i < distance.length(); i++) {
+            if (distance.charAt(i) != ',') {
+                fixed = fixed + distance.charAt(i);
+            }
+        }
+        return fixed;
+    }
+
+    /**
+     * Looks for the table with a name containing the substring "name".
+     * Returns the rows of the found table or empty if not found.
+     *
+     * @param name The name we are searching for
+     * @param doc The document over which we are looking for the table
+     * @return returns the rows of the found table (empty if not found)
+     */
     private static Elements searchTableContains(String name, Document doc) {
         Elements table = doc.select("table");
-        // iterating over all tables
         for (Element t : table) {
-            //if table is null go next
             if (t != null) {
-                // if header of table is null go next (we want the name of the first part of the header)
                 if (t.select("th") != null) {
                     for (Element x : t.select("th")) {
                         if (x.text().equals(name)) {
@@ -640,27 +585,17 @@ public class WebParser {
         return new Elements();
     }
 
-    private static Elements searchTableContainsTable(String name, Document doc) {
-        Elements table = doc.select("table");
-        // iterating over all tables
-        for (Element t : table) {
-            //if table is null go next
-            if (t != null) {
-                // if header of table is null go next (we want the name of the first part of the header)
-                if (t.select("th") != null) {
-                    for (Element x : t.select("th")) {
-                        if (x.text().equals(name)) {
-                            if (t.select("a") != null) {
-                                return t.select("a");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return new Elements();
-    }
-
+    /**
+     * This method serves as a helper method. It will iterate over the rows
+     * of some table and find if the year matches the specified year. If so,
+     * it gets the associated link and returns it. If the years are 1916, 1940,
+     * or 1944, it just prints out that the games were cancelled in those years.
+     *
+     * @param rows The rows of the table we are inspecting
+     * @param year The year we are interested
+     * @param doc The document we will be searching over
+     * @return returns a String representation of the correct page
+     */
     public static String getYearPage(Elements rows, int year, Document doc) {
         if (year == 1916 || year == 1940 || year == 1944) {
             System.out.println("Summer Olympic Games were canceled in " + year);
@@ -673,7 +608,7 @@ public class WebParser {
                     if (row.select("td").size() >= 2) {
                         if (row.select("td").get(1).selectFirst("a") != null) {
                             Element link = row.select("td").get(1).selectFirst("a");
-                            correctPage = "https://en.wikipedia.org" + link.attr("href");   //ASK!!!!!!!!!!!!!!!
+                            correctPage = link.attr("abs:href");
                         }
                     }
                 }
@@ -681,7 +616,7 @@ public class WebParser {
                 if (row.selectFirst("th") != null) {
                     if (row.selectFirst("th").text().substring(0,4).equals("" + year)) {
                         if (row.selectFirst("a") != null) {
-                            correctPage = "https://en.wikipedia.org" + row.selectFirst("a").attr("href");
+                            correctPage = row.selectFirst("a").attr("abs:href");
                         }
                     }
                 }
